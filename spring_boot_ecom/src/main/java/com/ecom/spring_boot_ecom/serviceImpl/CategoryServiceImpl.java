@@ -7,11 +7,15 @@ import com.ecom.spring_boot_ecom.payload.CategoryDTO;
 import com.ecom.spring_boot_ecom.payload.CategoryResponse;
 import com.ecom.spring_boot_ecom.repo.CategoryRepo;
 import com.ecom.spring_boot_ecom.service.CategoryService;
-import jakarta.validation.Valid;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 import java.util.List;
@@ -29,8 +33,15 @@ public class CategoryServiceImpl implements CategoryService {
     private ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories() {
-        List<Category> allCategories = categoryRepo.findAll();
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+
+        Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Page<Category> categoryPage = categoryRepo.findAll(pageDetails);
+        List<Category> allCategories = categoryPage.getContent();
+
         if(allCategories.isEmpty()){
             throw new APIException("No categories found");
         }
@@ -39,6 +50,14 @@ public class CategoryServiceImpl implements CategoryService {
 
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setContent(categoryDTOS);
+
+        // Meta data for pagination
+        categoryResponse.setPageNumber(categoryPage.getNumber());
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setTotalPages(categoryPage.getTotalPages());
+        categoryResponse.setLastPage(categoryPage.isLast());
+
 
         return categoryResponse;
     }
