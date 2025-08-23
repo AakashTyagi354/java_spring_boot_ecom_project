@@ -2,6 +2,7 @@ package com.ecom.spring_boot_ecom.Controller;
 
 
 import com.ecom.spring_boot_ecom.model.Category;
+import com.ecom.spring_boot_ecom.payload.CategoryDTO;
 import com.ecom.spring_boot_ecom.payload.CategoryResponse;
 import com.ecom.spring_boot_ecom.service.CategoryService;
 import jakarta.validation.Valid;
@@ -28,26 +29,26 @@ public class CategoryController {
     }
 
     @PostMapping("public/categories")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
-        categoryService.createCategory(category);
-        return new ResponseEntity<>("Category created successfully", HttpStatus.CREATED);
+    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+       CategoryDTO newCategoryDTO =  categoryService.createCategory(categoryDTO);
+        return new ResponseEntity<>(newCategoryDTO, HttpStatus.CREATED);
     }
 
     @DeleteMapping("admin/categories/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("categoryId") Long categoryId) {
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable("categoryId") Long categoryId) {
 
 
-                String status = categoryService.deleteCategory(categoryId);
+                CategoryDTO status = categoryService.deleteCategory(categoryId);
                 return new ResponseEntity<>(status,HttpStatus.OK);
 
     }
 
     @PutMapping("public/categories/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@Valid @PathVariable("categoryId") Long categoryId, @RequestBody Category category) {
+    public ResponseEntity<CategoryDTO> updateCategory(@Valid @PathVariable("categoryId") Long categoryId, @RequestBody CategoryDTO categoryDTO) {
 
 
 
-           Category status =  categoryService.updateCategory(categoryId, category);
+           CategoryDTO status =  categoryService.updateCategory(categoryId, categoryDTO);
             return new ResponseEntity<>(status,HttpStatus.OK);
 
 

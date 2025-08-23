@@ -2,16 +2,17 @@ package com.ecom.spring_boot_ecom.service;
 
 
 import com.ecom.spring_boot_ecom.model.Category;
+import com.ecom.spring_boot_ecom.payload.CategoryDTO;
 import com.ecom.spring_boot_ecom.payload.CategoryResponse;
 
 import java.util.List;
 
 public interface CategoryService {
-    CategoryResponse getAllCategories();
+    CategoryResponse  getAllCategories();
 
-    void createCategory(Category category);
+    CategoryDTO createCategory(CategoryDTO categoryDTO);
 
-    String deleteCategory(Long categoryId);
+    CategoryDTO deleteCategory(Long categoryId);
 
-    Category updateCategory(Long categoryId, Category category);
+    CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO);
 }
