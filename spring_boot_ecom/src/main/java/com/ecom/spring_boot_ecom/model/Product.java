@@ -3,15 +3,14 @@ package com.ecom.spring_boot_ecom.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "products")
+@ToString
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,8 +25,6 @@ public class Product {
     private String productDescription;
 
 
-    private String manufacturer;
-
     private Integer quantity;
 
     private Double price;
@@ -38,5 +35,10 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "seller_id")
+    // user will be persisting in product table as seller_id
+    private User user;
 
 }
