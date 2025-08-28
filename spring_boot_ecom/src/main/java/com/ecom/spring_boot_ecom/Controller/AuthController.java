@@ -4,8 +4,8 @@ package com.ecom.spring_boot_ecom.Controller;
 import com.ecom.spring_boot_ecom.model.AppRole;
 import com.ecom.spring_boot_ecom.model.Role;
 import com.ecom.spring_boot_ecom.model.User;
-import com.ecom.spring_boot_ecom.security.Reposistory.RoleReposistory;
-import com.ecom.spring_boot_ecom.security.Reposistory.UserReposistory;
+import com.ecom.spring_boot_ecom.security.repository.RoleReposistory;
+import com.ecom.spring_boot_ecom.security.repository.UserRepository;
 import com.ecom.spring_boot_ecom.security.jwt.*;
 import com.ecom.spring_boot_ecom.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -38,7 +38,7 @@ public class AuthController {
 
 
     @Autowired
-    private UserReposistory userReposistory;
+    private UserRepository userReposistory;
 
     @Autowired
     PasswordEncoder passwordEncoder;

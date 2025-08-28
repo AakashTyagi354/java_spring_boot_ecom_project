@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,5 +43,9 @@ public class Product {
     @JoinColumn(name = "seller_id")
     // user will be persisting in product table as seller_id
     private User user;
+
+
+    @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST,CascadeType.MERGE},fetch = FetchType.EAGER)
+    private List<CartItem> product = new ArrayList<>();
 
 }

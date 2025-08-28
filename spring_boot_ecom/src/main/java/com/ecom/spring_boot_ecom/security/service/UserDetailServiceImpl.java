@@ -1,7 +1,7 @@
 package com.ecom.spring_boot_ecom.security.service;
 
 import com.ecom.spring_boot_ecom.model.User;
-import com.ecom.spring_boot_ecom.security.Reposistory.UserReposistory;
+import com.ecom.spring_boot_ecom.security.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserDetailServiceImpl implements UserDetailsService {
 
     @Autowired
-    UserReposistory userRepository;
+    private UserRepository userRepository;
 
     @Override
     @Transactional

@@ -3,8 +3,8 @@ package com.ecom.spring_boot_ecom.security;
 import com.ecom.spring_boot_ecom.model.AppRole;
 import com.ecom.spring_boot_ecom.model.Role;
 import com.ecom.spring_boot_ecom.model.User;
-import com.ecom.spring_boot_ecom.security.Reposistory.RoleReposistory;
-import com.ecom.spring_boot_ecom.security.Reposistory.UserReposistory;
+import com.ecom.spring_boot_ecom.security.repository.RoleReposistory;
+import com.ecom.spring_boot_ecom.security.repository.UserRepository;
 import com.ecom.spring_boot_ecom.security.jwt.AuthEntryPointJwt;
 import com.ecom.spring_boot_ecom.security.jwt.AuthTokenFilter;
 import com.ecom.spring_boot_ecom.security.service.UserDetailServiceImpl;
@@ -44,7 +44,7 @@ public class WebSecurityConfig {
     private RoleReposistory roleRepository;
 
     @Autowired
-    private UserReposistory userRepository;
+    private UserRepository userRepository;
 
 
     @Bean
@@ -114,7 +114,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public CommandLineRunner initData(RoleReposistory roleRepository, UserReposistory userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initData(RoleReposistory roleRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             // Retrieve or create roles
             Role userRole = roleRepository.findByRoleName(AppRole.ROLE_USER)
