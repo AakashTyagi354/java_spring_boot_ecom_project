@@ -43,7 +43,7 @@ public class CartServiceImpl implements CartService {
         Product product = productRepo.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
         CartItem cartItem = cartItemRepo.findCartItemByProductIdAndCartId(
-                cart.getCartItems(),
+                cart.getCartId(),
                 productId
         );
         if (cartItem != null) {
@@ -71,15 +71,44 @@ public class CartServiceImpl implements CartService {
 
         List<CartItem> cartItems = cart.getCartItems();
 
-        Stream<ProductDTO> productDTOStream = cartItems.stream().map(item -> {
-            ProductDTO productDTO = modelMapper.map(item.getProduct(), ProductDTO.class);
-            productDTO.setQuantity(item.getQuantity());
-            return productDTO;
+        Stream<ProductDTO> productStream = cartItems.stream().map(item -> {
+            ProductDTO map = modelMapper.map(item.getProduct(), ProductDTO.class);
+            map.setQuantity(item.getQuantity());
+            return map;
         });
 
-        cartDTO.setProducts(productDTOStream.toList());
+        cartDTO.setProducts(productStream.toList());
 
+        return cartDTO;
+    }
 
+    @Override
+    public List<CartDTO> getAllCarts() {
+        List<Cart> carts = cartRepo.findAll();
+        if (carts.isEmpty()) throw new APIException("No carts found");
+
+        List<CartDTO> cartDTOS = carts.stream()
+                .map(cart -> {
+                    CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+                    List<CartItem> cartItems = cart.getCartItems();
+                    List<ProductDTO> products = cart.getCartItems().stream()
+                            .map(p -> modelMapper.map(p.getProduct(), ProductDTO.class)).toList();
+                    cartDTO.setProducts(products);
+                    return cartDTO;
+                }).toList();
+
+        return cartDTOS;
+    }
+
+    @Override
+    public CartDTO getCart(String emailId, Long cartId) {
+        Cart cart = cartRepo.findCartByEmailAndCartId(emailId, cartId);
+        if (cart == null) throw new ResourceNotFoundException("Cart", "cartId", cartId);
+        CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+        cart.getCartItems().forEach(c -> c.getProduct().setQuantity(c.getQuantity()));
+        List<ProductDTO> products = cart.getCartItems().stream()
+                .map(p -> modelMapper.map(p.getProduct(), ProductDTO.class)).toList();
+        cartDTO.setProducts(products);
         return cartDTO;
     }
 
