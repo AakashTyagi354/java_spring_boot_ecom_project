@@ -74,11 +74,11 @@ public class User {
 //            Instead, it reuses the user_address join table created from the User entity.
     @Getter
     @Setter
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "user_address",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE},orphanRemoval = true)
+//    @JoinTable(name = "user_address",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "address_id")
+//    )
     private List<Address> addresses = new ArrayList<>();
 
     @ToString.Exclude
