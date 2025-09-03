@@ -57,6 +57,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Value("${image.base.url}")
+    private String imageBaseUrl;
+
 
     @Override
     public ProductDTO addProduct(ProductDTO productDTO, Long categoryId) {
@@ -91,12 +94,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize,String sortBy, String sortOrder) {
+    public ProductResponse getAllProducts(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
 
-        Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
         Page<Product> productsCotent = productRepo.findAll(pageDetails);
         List<Product> products = productsCotent.getContent();
@@ -104,7 +107,13 @@ public class ProductServiceImpl implements ProductService {
         if (products.isEmpty()) {
             throw new APIException("No products found");
         }
-        List<ProductDTO> productsDTO = products.stream().map(product -> modelMapper.map(product, ProductDTO.class)).toList();
+        List<ProductDTO> productsDTO = products.stream()
+                .map(product -> {
+                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+                    productDTO.setImage((constructImageUrl(product.getImage())));
+                    return productDTO;
+                })
+                .toList();
 
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productsDTO);
@@ -118,6 +127,11 @@ public class ProductServiceImpl implements ProductService {
         return productResponse;
     }
 
+    private String constructImageUrl(String imageName) {
+
+        return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : "/" + imageName;
+    }
+
     @Override
     public ProductResponse searchByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
@@ -125,11 +139,10 @@ public class ProductServiceImpl implements ProductService {
                 : Sort.by(sortBy).descending();
 
 
-        Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
 
-
-        Page<Product> pageContent = productRepo.findByCategoryOrderByPriceAsc(category,pageDetails);
+        Page<Product> pageContent = productRepo.findByCategoryOrderByPriceAsc(category, pageDetails);
         List<Product> products = pageContent.getContent();
         if (products.isEmpty()) {
             throw new APIException("No products found");
@@ -155,9 +168,9 @@ public class ProductServiceImpl implements ProductService {
                 : Sort.by(sortBy).descending();
 
 
-        Pageable pageDetails = PageRequest.of(pageNumber,pageSize,sortByAndOrder);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
 
-        Page<Product> pageContent = productRepo.findByProductNameLikeIgnoreCase('%' + keyword + '%',pageDetails);
+        Page<Product> pageContent = productRepo.findByProductNameLikeIgnoreCase('%' + keyword + '%', pageDetails);
         List<Product> products = pageContent.getContent();
 
         if (products.isEmpty()) {
@@ -202,7 +215,7 @@ public class ProductServiceImpl implements ProductService {
             return cartDTO;
         }).toList();
 
-        cartDTOS.forEach(cart -> cartService.updateProductInCarts(cart.getId(),productId));
+        cartDTOS.forEach(cart -> cartService.updateProductInCarts(cart.getId(), productId));
 
 
         return modelMapper.map(updatedProduct, ProductDTO.class);

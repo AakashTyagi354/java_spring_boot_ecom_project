@@ -93,6 +93,7 @@ public class WebSecurityConfig {
                                 .anyRequest().authenticated()
                 );
 
+//        This means Spring Security will use your custom user loading logic for authentication.
         http.authenticationProvider(authenticationProvider());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
